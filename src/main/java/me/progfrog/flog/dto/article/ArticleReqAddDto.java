@@ -6,7 +6,7 @@ public record ArticleReqAddDto(
         String title,
         String content
 ) {
-    public Article toEntity() {
-        return new Article(title, content);
+    public Article toEntity(String author) {
+        return new Article(author, title, content);
     }
 }
