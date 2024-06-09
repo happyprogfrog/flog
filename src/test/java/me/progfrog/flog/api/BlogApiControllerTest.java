@@ -2,9 +2,11 @@ package me.progfrog.flog.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.progfrog.flog.domain.Article;
+import me.progfrog.flog.domain.User;
 import me.progfrog.flog.dto.article.ArticleReqAddDto;
 import me.progfrog.flog.dto.article.ArticleReqUpdateDto;
 import me.progfrog.flog.repository.BlogRepository;
+import me.progfrog.flog.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -45,8 +50,16 @@ class BlogApiControllerTest {
     @Autowired
     BlogRepository blogRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
+    User user;
+
     @BeforeEach
     public void setUp() {
+        user = userRepository.save(new User("user@email.com", "test!!"));
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities()));
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
 
@@ -96,6 +109,7 @@ class BlogApiControllerTest {
         final String requestBody = objectMapper.writeValueAsString(reqAddDto);
 
         Principal principal = Mockito.mock(Principal.class);
+        Mockito.when(principal.getName()).thenReturn("username");
 
         // when
         // 설정한 내용을 바탕으로 요청 전송
@@ -160,6 +174,6 @@ class BlogApiControllerTest {
     private Article createDefaultArticle() {
         String title = "title~~~";
         String content = "content!!!";
-        return blogRepository.save(new Article(title, content));
+        return blogRepository.save(new Article(user.getUsername(), title, content));
     }
 }
