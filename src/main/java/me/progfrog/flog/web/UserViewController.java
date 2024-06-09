@@ -10,7 +10,7 @@ public class UserViewController {
 
     @GetMapping("/login")
     public String getLoginForm() {
-        return "users/login";
+        return "users/oauthLogin";
     }
 
     @GetMapping("/signup")

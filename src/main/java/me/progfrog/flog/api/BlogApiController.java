@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -36,8 +37,8 @@ public class BlogApiController {
     }
 
     @PostMapping
-    public ResponseEntity<ArticleResDto> addArticle(@RequestBody ArticleReqAddDto reqAddDto) {
-        ArticleResDto resDto = new ArticleResDto(blogService.save(reqAddDto));
+    public ResponseEntity<ArticleResDto> addArticle(@RequestBody ArticleReqAddDto reqAddDto, Principal principal) {
+        ArticleResDto resDto = new ArticleResDto(blogService.save(reqAddDto, principal.getName()));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(resDto);
     }
