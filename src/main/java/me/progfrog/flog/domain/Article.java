@@ -17,12 +17,16 @@ public class Article extends TimeBaseEntity {
     private Long id;
 
     @Column(nullable = false)
+    private String author;
+
+    @Column(nullable = false)
     private String title;
 
     @Column(nullable = false)
     private String content;
 
-    public Article(String title, String content) {
+    public Article(String author, String title, String content) {
+        this.author = author;
         this.title = title;
         this.content = content;
     }
